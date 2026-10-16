@@ -16,7 +16,6 @@ export class TeacherDashboardComponent {
 
   protected readonly teacherId = this.auth.currentUser()?.id ?? '';
   protected readonly quizzes = this.quizService.quizzes;
-  protected readonly attempts = this.quizService.attempts;
 
   protected readonly stats = computed(() => this.quizService.teacherStats(this.teacherId));
 

@@ -37,7 +37,7 @@ npm start          # serveur de développement : http://localhost:4200/
 
 ```bash
 npm run build      # build de production (SSR) dans dist/
-npm test           # tests unitaires (Vitest)
+npm test           # 28 tests unitaires (Vitest)
 ```
 
 ## Comptes de démonstration
@@ -78,7 +78,33 @@ Déploiement : le dépôt est connecté au projet Vercel `quizix`. Un push sur
 configuration (aucun réglage à faire dans l'interface). Pour déployer sans
 passer par Git : `npm i -g vercel` puis `vercel --prod`.
 
-> **Domaine personnalisé** : Angular bloque par défaut les domaines non déclarés.
-> Pour utiliser un autre domaine que `*.vercel.app`, l'ajouter à
-> `security.allowedHosts` dans `angular.json` puis redéployer, sinon le rendu
-> répond `400 Bad Request`.
+### Domaine personnalisé
+
+L'adresse actuelle est un sous-domaine Vercel (`https://quizix-beta.vercel.app`).
+Pour utiliser `quizix.mondomaine.fr`, trois étapes :
+
+1. **Déclarer le domaine chez Vercel** : projet `quizix` → *Settings* → *Domains*
+   → *Add*, saisir le nom. Vercel affiche alors les enregistrements DNS à créer
+   et délivre automatiquement le certificat TLS une fois la vérification faite.
+2. **Créer les enregistrements DNS chez le registrar** du domaine :
+
+   | Nom du domaine               | Type  | Valeur                    |
+   | ---------------------------- | ----- | ------------------------- |
+   | `quizix` (sous-domaine)      | CNAME | `cname.vercel-dns.com`    |
+   | `mondomaine.fr` (racine)     | A     | `76.76.21.21`             |
+
+   La propagation prend de quelques minutes à quelques heures.
+3. **Autoriser le domaine dans Angular** : ajouter le nom à
+   `security.allowedHosts` dans `angular.json` (les jokers sont acceptés, par
+   exemple `*.mondomaine.fr`), puis pousser sur `main`. Sans cette autorisation,
+   le rendu côté serveur répond `400 Bad Request`, car Angular n'exécute le SSR
+   que pour les domaines déclarés (protection anti-SSRF).
+
+### Rendu par route
+
+Le mode de rendu est choisi route par route dans `src/app/app.routes.server.ts` :
+
+| Routes                            | Rendu         | Pourquoi                                                                                     |
+| --------------------------------- | ------------- | -------------------------------------------------------------------------------------------- |
+| `/login`, `/catalog`              | côté serveur  | contenu identique pour tous les visiteurs : le HTML part déjà rempli                          |
+| `/dashboard/**`, `/quiz/**`, `/results` | côté client | dépendent de la session et des données du navigateur ; rendus côté serveur (qui ne connaît ni l'une ni les autres) ils renverraient de fausses redirections vers `/login` au rafraîchissement |

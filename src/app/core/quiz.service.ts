@@ -223,7 +223,12 @@ export class QuizService {
         this.quizzes.set(storedQuizzes);
         this.attempts.set(storedAttempts);
       }
+      return;
     }
+    // Rendu côté serveur : on part des mêmes données de départ qu'un navigateur
+    // neuf, pour que le HTML rendu corresponde au premier rendu du client.
+    this.quizzes.set(buildSeedQuizzes());
+    this.attempts.set(buildSeedAttempts());
   }
 
   getQuiz(id: string): Quiz | undefined {
@@ -324,7 +329,8 @@ export class QuizService {
         avgScore: avg,
       });
     }
-    return scores.sort((a, b) => b.avgScore - a.avgScore || a.studentName.localeCompare(b.studentName));
+    // A score egal, l ordre est determiné par l identifiant de l eleve.
+    return scores.sort((a, b) => b.avgScore - a.avgScore || a.studentId.localeCompare(b.studentId));
   }
 
   /** Statistiques globales pour le tableau de bord enseignant. */
