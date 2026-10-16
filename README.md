@@ -1,59 +1,56 @@
 # QUIZix
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.3.
+Devoir Angular en développement frontend avancé.
 
-## Development server
+QUIZix est une plateforme de quiz en classe, en français : les enseignants créent,
+modifient et publient des quiz ; les élèves parcourent un catalogue, passent les
+quiz chronométrés à difficulté progressive, reçoivent leur note et consultent le
+classement.
 
-To start a local development server, run:
+## Fonctionnalités
 
-```bash
-ng serve
-```
+- Authentification : inscription, connexion, déconnexion, session conservée ;
+  rôles **enseignant** et **élève** avec droits distincts.
+- Gestion des quiz : création, modification et suppression des quiz et de leurs
+  questions, publication et retrait de la publication.
+- Tableau de bord enseignant : indicateurs (quiz publiés, brouillons, tentatives,
+  score moyen) et actions sur chaque quiz.
+- Passage d'un quiz : catalogue consultable et filtrable, chronomètre, difficulté
+  progressive, correction automatique et note.
+- Classement : élèves classés par score moyen, égalités gérées.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Démarrage
 
 ```bash
-ng build
+npm install
+npm start          # serveur de développement : http://localhost:4200/
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Build et tests
 
 ```bash
-ng test
+npm run build      # build de production (SSR) dans dist/
+npm test           # tests unitaires (Vitest)
 ```
 
-## Running end-to-end tests
+## Comptes de démonstration
 
-For end-to-end (e2e) testing, run:
+Les données sont simulées côté navigateur (`localStorage`) : aucun backend, aucun
+service externe. Les mots de passe ci-dessous sont des identifiants de
+démonstration, pas des secrets.
 
-```bash
-ng e2e
-```
+| Rôle      | Identifiant                | Mot de passe |
+| --------- | -------------------------- | ------------ |
+| Enseignant | `professeur`              | `quizix`     |
+| Élève      | `eleve`, `marie`, `paul`  | `quizix`     |
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Structure du projet
 
-## Additional Resources
+- `src/app/core/` — modèles et services (authentification, quiz, partie en cours)
+- `src/app/auth/` , `src/app/teacher/` , `src/app/student/` , `src/app/leaderboard/` — écrans
+- `src/styles.css` — thème global (bleu nuit, ivoire, accents dorés et corail)
+- `openspec/` — spécifications et suivi du changement (OpenSpec)
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Déploiement
+
+Application Angular avec rendu côté serveur (SSR), déployée sur Vercel.
