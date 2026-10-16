@@ -7,6 +7,13 @@ modifient et publient des quiz ; les élèves parcourent un catalogue, passent l
 quiz chronométrés à difficulté progressive, reçoivent leur note et consultent le
 classement.
 
+## Démo en ligne
+
+<https://quizix-beta.vercel.app>
+
+L'application tourne en **rendu côté serveur (SSR)** sur Vercel : le dépôt est
+connecté au projet, chaque push sur `main` redéploie automatiquement.
+
 ## Fonctionnalités
 
 - Authentification : inscription, connexion, déconnexion, session conservée ;
@@ -66,9 +73,10 @@ fonction Node qui exécute le serveur Angular Express (`src/server.ts`).
 Le build produit le serveur SSR, et `includeFiles` embarque `dist/QUIZix/**`
 (serveur + fichiers statiques) dans le bundle de la fonction.
 
-Déploiement : importer le dépôt sur [vercel.com/new](https://vercel.com/new) —
-`vercel.json` pilote toute la configuration, aucun réglage à modifier. En ligne
-de commande : `npm i -g vercel` puis `vercel --prod`.
+Déploiement : le dépôt est connecté au projet Vercel `quizix`. Un push sur
+`main` déclenche un déploiement de production, et `vercel.json` pilote toute la
+configuration (aucun réglage à faire dans l'interface). Pour déployer sans
+passer par Git : `npm i -g vercel` puis `vercel --prod`.
 
 > **Domaine personnalisé** : Angular bloque par défaut les domaines non déclarés.
 > Pour utiliser un autre domaine que `*.vercel.app`, l'ajouter à
