@@ -49,3 +49,7 @@ Thumbs.db
 
 # Vercel (liens de projet locaux)
 /.vercel
+# Fichiers d'environnement et jetons locaux : ne jamais committer
+.env
+.env.*
+!.env.example
