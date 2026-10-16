@@ -282,7 +282,12 @@ export class QuizService {
       durationSec: 0,
       finishedAt: 0,
     };
-    const attempts = [attempt, ...this.attempts()];
+    // Une tentative non terminée du même élève sur le même quiz est remplacée :
+    // elle ne doit ni s'accumuler, ni peser dans le classement.
+    const others = this.attempts().filter(
+      (a) => !(a.studentId === student.id && a.quizId === quizId && a.finishedAt === 0),
+    );
+    const attempts = [attempt, ...others];
     this.attempts.set(attempts);
     writeJson(ATTEMPTS_KEY, attempts, this.platformId);
     return attempt;
@@ -299,6 +304,10 @@ export class QuizService {
   leaderboard(): StudentScore[] {
     const attemptsByStudent = new Map<string, QuizAttempt[]>();
     for (const a of this.attempts()) {
+      if (a.finishedAt <= 0) {
+        // Tentative en cours ou abandonnée : elle ne participe pas au classement.
+        continue;
+      }
       const list = attemptsByStudent.get(a.studentId) ?? [];
       list.push(a);
       attemptsByStudent.set(a.studentId, list);
@@ -321,7 +330,8 @@ export class QuizService {
   /** Statistiques globales pour le tableau de bord enseignant. */
   teacherStats(teacherId: string): { published: number; drafts: number; attempts: number; avgScore: number } {
     const quizzes = this.getTeacherQuizzes(teacherId);
-    const attempts = this.attempts();
+    // Seules les tentatives terminées comptent (cohérent avec le classement).
+    const attempts = this.attempts().filter((a) => a.finishedAt > 0);
     const published = quizzes.filter((q) => q.status === 'published').length;
     const drafts = quizzes.filter((q) => q.status === 'draft').length;
     const avgScore = attempts.length

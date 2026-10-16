@@ -54,26 +54,38 @@ export class GameService {
   }
 
   finish(): QuizAttempt | null {
+    const alreadyFinished = this.finishedAttempt();
+    if (alreadyFinished) {
+      return alreadyFinished;
+    }
     const attemptId = this.attemptId();
     const attempt = this.quizService.getAttemptById(attemptId ?? '');
     if (!attempt) {
       return null;
     }
-    const answers = this.answers();
     const quiz = this.quizService.getQuiz(this.quizId() ?? '');
-    const questionIds = quiz?.questions.map((q) => q.id) ?? [];
-    const answeredIds = questionIds.filter((id) => answers[id] !== undefined);
-    let correctCount = 0;
-    for (const qid of answeredIds) {
-      const question = quiz?.questions.find((q) => q.id === qid);
-      if (question && answers[qid] === question.correctIndex) {
-        correctCount += 1;
-      }
+    const questions = quiz?.questions ?? [];
+    const chosen = this.answers();
+    // Toutes les questions sont enregistrées : l'index choisi par l'élève, ou -1
+    // si la question n'a pas été répondue. C'est cette copie qui permet à la
+    // correction d'afficher « Votre réponse ».
+    const answers: Record<string, number> = {};
+    for (const question of questions) {
+      answers[question.id] = chosen[question.id] ?? -1;
     }
-    const totalQuestions = quiz?.questions.length ?? 0;
+    const totalQuestions = questions.length;
+    const correctCount = questions.filter((q) => answers[q.id] === q.correctIndex).length;
     const score = totalQuestions > 0 ? correctCount / totalQuestions : 0;
     const elapsed = Math.max(0, this.durationSec() - this.secondsLeft());
-    const finished: QuizAttempt = { ...attempt, score, correctCount, durationSec: elapsed, finishedAt: Date.now() };
+    const finished: QuizAttempt = {
+      ...attempt,
+      answers,
+      score,
+      correctCount,
+      totalQuestions,
+      durationSec: elapsed,
+      finishedAt: Date.now(),
+    };
     this.quizService.saveAttempt(finished);
     this.finishedAttempt.set(finished);
     return finished;
