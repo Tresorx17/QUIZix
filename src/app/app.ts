@@ -1,12 +1,31 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, effect, inject } from '@angular/core';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AuthService } from './core/auth.service';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
+  styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('QUIZix');
+  protected readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  protected readonly user = this.auth.currentUser;
+
+  protected logout(): void {
+    this.auth.logout();
+    void this.router.navigate(['/login']);
+  }
+
+  constructor() {
+    effect(() => {
+      const user = this.auth.currentUser();
+      const url = this.router.url;
+      if (!user && !url.startsWith('/login')) {
+        void this.router.navigate(['/login']);
+      }
+    });
+  }
 }

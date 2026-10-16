@@ -1,0 +1,61 @@
+﻿<section class="login-page">
+  <div class="login-card">
+    <div class="login-card__brand">
+      <span class="login-card__logo">Q</span>
+      <h1 class="login-card__title">QUIZix</h1>
+    </div>
+    <p class="login-card__tagline">Plateforme de quiz en classe - demonstration</p>
+
+    <form (submit)="onSubmit($event)">
+      <label class="field">
+        <span class="field__label">Nom d'utilisateur</span>
+        <input
+          class="field__input"
+          type="text"
+          name="username"
+          autocomplete="username"
+          placeholder="ex : professeur"
+          [value]="username()"
+          (input)="onUsernameInput($event)"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Mot de passe</span>
+        <input
+          class="field__input"
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          placeholder="quizix"
+          [value]="password()"
+          (input)="onPasswordInput($event)"
+        />
+      </label>
+
+      @if (error()) {
+        <p class="login-card__error">{{ error() }}</p>
+      }
+
+      <button type="submit" class="btn btn--primary btn--block">Se connecter</button>
+    </form>
+
+    <div class="login-card__demo">
+      <p class="login-card__demo-title">Comptes de demonstration</p>
+
+      <button type="button" class="demo-account" (click)="quickLogin(teacher)">
+        <span class="demo-account__role">Enseignant</span>
+        <span class="demo-account__cred">{{ teacher.username }} / {{ teacher.password }}</span>
+      </button>
+
+      @for (u of demoStudents; track u.id) {
+        <button type="button" class="demo-account" (click)="quickLogin(u)">
+          <span class="demo-account__role">Eleve - {{ u.displayName }}</span>
+          <span class="demo-account__cred">{{ u.username }} / {{ u.password }}</span>
+        </button>
+      }
+
+      <p class="demo-account__hint">Simulation front-end : les donnees restent dans votre navigateur.</p>
+    </div>
+  </div>
+</section>

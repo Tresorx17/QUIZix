@@ -1,0 +1,48 @@
+﻿@if (finished(); as result) {
+  <div class="result-screen">
+    <h1 class="result-screen__title">Quiz terminé !</h1>
+    <p class="result-screen__score">{{ (result.score * 100) | number:'1.0-0' }}% de bonnes réponses</p>
+    <p class="result-screen__meta">
+      {{ result.correctCount }} / {{ result.totalQuestions }} bonnes réponses · {{ result.durationSec }} s
+    </p>
+    <button class="btn btn--primary btn--block" (click)="finishAgain()">Recommencer</button>
+    <button class="btn btn--ghost btn--block" (click)="goToCatalog()">Retour au catalogue</button>
+  </div>
+} @else if (currentQuestion(); as question) {
+  <div class="taking">
+    <div class="taking__top">
+      <span class="taking__question-count">
+        Question {{ currentIndex() + 1 }} / {{ quiz()?.questions.length }}
+      </span>
+      <span class="taking__timer" [class.taking__timer--low]="secondsLeft() <= 10">{{ secondsText }}</span>
+      <button type="button" class="btn btn--secondary" (click)="finish()">Terminer</button>
+    </div>
+
+    <div class="progress">
+      <div class="progress__bar" [style.width.%]="progress()"></div>
+    </div>
+
+    <div class="question-card">
+      <h2 class="question-card__text">{{ question.text }}</h2>
+      <div class="question-card__difficulty">Difficulté : {{ question.difficulty }} / 3</div>
+
+      <div class="options-list">
+        @for (option of question.options; track $index) {
+          <button
+            class="option-btn"
+            [class.option-btn--selected]="answers()[question.id] === $index"
+            (click)="answer($index)"
+            [disabled]="finished()"
+          >
+            {{ option }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="empty-state">
+    <p class="empty-state__title">Quiz indisponible</p>
+    <button class="btn btn--primary" (click)="goToCatalog()">Retour au catalogue</button>
+  </div>
+}

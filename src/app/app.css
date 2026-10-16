@@ -1,0 +1,9 @@
+/*
+ * Styles du composant racine.
+ * L'apparence de l'en-tête et du conteneur principal est définie
+ * globalement dans src/styles.css (palette bleu nuit / ivoire / doré / corail).
+ */
+:host {
+  display: block;
+  min-height: 100dvh;
+}

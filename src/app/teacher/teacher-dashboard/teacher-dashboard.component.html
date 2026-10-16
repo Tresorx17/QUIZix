@@ -1,0 +1,62 @@
+﻿<div class="page-header">
+  <div>
+    <h1 class="page-title">Tableau de bord</h1>
+    <p class="page-subtitle">Gérez vos quiz : création, publication et suivi.</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn--primary" (click)="createQuiz()">+ Créer un quiz</button>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-card__value">{{ stats().published }}</span>
+    <span class="stat-card__label">Quiz publiés</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{{ stats().drafts }}</span>
+    <span class="stat-card__label">Brouillons</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{{ attempts().length }}</span>
+    <span class="stat-card__label">Tentatives enregistrées</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{{ (stats().avgScore * 100) | number:'1.0-0' }}%</span>
+    <span class="stat-card__label">Score moyen des tentatives</span>
+  </div>
+</div>
+
+<div class="quiz-list">
+  @if (teacherQuizzes().length === 0) {
+    <div class="empty-state">
+      <p class="empty-state__title">Aucun quiz pour le moment</p>
+      <p class="empty-state__text">Créez votre premier quiz pour le publier et le rendre visible aux élèves.</p>
+      <button class="btn btn--primary" (click)="createQuiz()">Créer un quiz</button>
+    </div>
+  } @else {
+    @for (quiz of teacherQuizzes(); track quiz.id) {
+      <div class="quiz-row">
+        <div class="quiz-row__info">
+          <div class="quiz-row__title-line">
+            <h2 class="quiz-row__title">{{ quiz.title }}</h2>
+            <span class="badge" [class.badge--draft]="quiz.status === 'draft'" [class.badge--published]="quiz.status === 'published'">
+              {{ quiz.status === 'draft' ? 'Brouillon' : 'Publié' }}
+            </span>
+          </div>
+          <p class="quiz-row__meta">
+            {{ quiz.questions.length }} question{{ quiz.questions.length > 1 ? 's' : '' }} · {{ quiz.timeLimitSec }}s de temps ·
+            {{ quiz.status === 'published' ? 'Visible pour les élèves' : 'Masqué pour les élèves' }}
+          </p>
+        </div>
+        <div class="quiz-row__actions">
+          <button class="btn btn--ghost" (click)="editQuiz(quiz.id)">Modifier</button>
+          <button class="btn btn--ghost" (click)="togglePublish(quiz.id)">
+            {{ quiz.status === 'published' ? 'Retirer de la publication' : 'Publier' }}
+          </button>
+          <button class="btn btn--danger-ghost" (click)="removeQuiz(quiz.id)">Supprimer</button>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,31 @@
+@if (attempt(); as attempt) {
+  <div class="result-screen">
+    <h1 class="result-screen__title">Quiz terminé !</h1>
+    <p class="result-screen__score">{{ attempt.score * 100 | number: '1.0-0' }}% de bonnes réponses</p>
+    <p class="result-screen__meta">
+      {{ attempt.correctCount }} / {{ attempt.totalQuestions }} bonnes réponses · {{ secondsText }}
+    </p>
+
+    @if (quiz(); as quiz) {
+      <div class="result-screen__questions">
+        @for (question of quiz.questions; track question.id) {
+          <div class="result-question">
+            <p class="result-question__text">{{ question.text }}</p>
+            <p class="result-question__answer">Votre réponse : {{ answerText(attempt, question) }}</p>
+            <p class="result-question__correct">Bonne réponse : {{ question.options[question.correctIndex] }}</p>
+            @if (question.explanation) {
+              <p class="result-question__explanation">{{ question.explanation }}</p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <button class="btn btn--primary btn--block" (click)="goToCatalog()">Retour au catalogue</button>
+  </div>
+} @else {
+  <div class="empty-state">
+    <p class="empty-state__title">Résultat indisponible</p>
+    <button class="btn btn--primary" (click)="goToCatalog()">Retour au catalogue</button>
+  </div>
+}

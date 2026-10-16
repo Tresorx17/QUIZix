@@ -1,0 +1,85 @@
+﻿<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ quiz() ? 'Modifier le quiz' : 'Créer un quiz' }}</h1>
+    <p class="page-subtitle">Ajoutez vos questions, désignez la bonne réponse, puis publiez.</p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn btn--secondary" (click)="cancel()">Retour</button>
+    <button type="button" class="btn btn--ghost" (click)="save(false)">Enregistrer (brouillon)</button>
+    <button type="button" class="btn btn--primary" (click)="save(true)">Enregistrer et publier</button>
+  </div>
+</div>
+
+@if (quiz(); as q) {
+  <div class="editor-card">
+    <label class="field">
+      <span class="field__label">Titre</span>
+      <input class="field__input" type="text" name="title" placeholder="Titre du quiz" [value]="q.title" (input)="onMetaTitleInput($event)" />
+    </label>
+    <label class="field">
+      <span class="field__label">Description</span>
+      <input class="field__input" type="text" name="description" placeholder="Description (facultatif)" [value]="q.description" (input)="onMetaDescriptionInput($event)" />
+    </label>
+    <label class="field">
+      <span class="field__label">Durée limite (secondes)</span>
+      <input class="field__input" type="number" name="time-limit" min="15" step="15" [value]="q.timeLimitSec" (input)="onMetaTimeLimitInput($event)" />
+    </label>
+  </div>
+
+  <div class="questions-header">
+    <h2 class="section-title">Questions ({{ questions.length }})</h2>
+    <button type="button" class="btn btn--secondary" (click)="addQuestion()">+ Ajouter une question</button>
+  </div>
+
+  @if (questions.length === 0) {
+    <div class="empty-state">
+      <p class="empty-state__title">Aucune question</p>
+      <p class="empty-state__text">Ajoutez au moins une question avant d'enregistrer le quiz.</p>
+    </div>
+  } @else {
+    @for (question of questions; track question.id; let qi = $index) {
+      <div class="question-card">
+        <div class="question-head">
+          <h3 class="question-title">Question {{ qi + 1 }}</h3>
+          <button type="button" class="btn btn--danger-ghost" (click)="removeQuestion(qi)">Supprimer</button>
+        </div>
+
+        <label class="field">
+          <span class="field__label">Intitulé de la question</span>
+          <input class="field__input" type="text" name="question-text" placeholder="Posez votre question" [value]="question.text" (input)="onQuestionText(qi, $event)" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Difficulté</span>
+          <select class="field__input" name="difficulty" [value]="question.difficulty" (change)="onDifficultyChange(qi, $event)">
+            <option [value]="1">Facile</option>
+            <option [value]="2">Moyen</option>
+            <option [value]="3">Difficile</option>
+          </select>
+        </label>
+
+        <p class="field__label">Choix de réponse (cochez la bonne réponse)</p>
+        <div class="options-editor">
+          @for (option of question.options; track $index; let oi = $index) {
+            <div class="option-row">
+              <input type="radio" name="correct-{{ question.id }}" [checked]="question.correctIndex === oi" (change)="onCorrectSelect(question.id, oi)" />
+              <input class="field__input" type="text" name="option-text" placeholder="Option {{ oi + 1 }}" [value]="option" (input)="onOptionText(question.id, oi, $event)" />
+              <button type="button" class="btn btn--danger-ghost" (click)="removeOption(question.id, oi)">Retirer</button>
+            </div>
+          }
+        </div>
+        <button type="button" class="btn btn--ghost" (click)="addOption(question.id)">+ Ajouter une option</button>
+
+        <label class="field">
+          <span class="field__label">Explication (facultatif)</span>
+          <input class="field__input" type="text" name="explanation" placeholder="Affichée après correction" [value]="question.explanation" (input)="onExplanationInput(qi, $event)" />
+        </label>
+      </div>
+    }
+  }
+} @else {
+  <div class="empty-state">
+    <p class="empty-state__title">Quiz indisponible</p>
+    <button class="btn btn--primary" (click)="cancel()">Retour au tableau de bord</button>
+  </div>
+}

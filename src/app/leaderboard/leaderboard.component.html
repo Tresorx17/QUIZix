@@ -1,0 +1,26 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Classement</h1>
+    <p class="page-subtitle">Les eleves sont classes par leur score moyen obtenu lors des quiz.</p>
+  </div>
+</div>
+
+<div class="leaderboard">
+  @if (scores().length === 0) {
+    <div class="empty-state">
+      <p class="empty-state__title">Aucun resultat pour le moment</p>
+      <p class="empty-state__text">Les tentatives terminees des eleves apparaitront ici.</p>
+    </div>
+  } @else {
+    <ol class="leaderboard__list">
+      @for (entry of scores(); track entry.studentId) {
+        <li class="leaderboard__row" [class.leaderboard__row--top]="$index < 3">
+          <span class="leaderboard__rank">{{ rankLabel($index + 1) }}</span>
+          <span class="leaderboard__name">{{ entry.studentName }}</span>
+          <span class="leaderboard__score">{{ scorePercent(entry.avgScore) }}%</span>
+          <span class="leaderboard__attempts">{{ entry.attempts }} tentative{{ entry.attempts > 1 ? 's' : '' }}</span>
+        </li>
+      }
+    </ol>
+  }
+</div>

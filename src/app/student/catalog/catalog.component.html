@@ -1,0 +1,59 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Catalogue des quiz</h1>
+    <p class="page-subtitle">Choisissez un quiz publie, il se lance immediatement avec son chronometre.</p>
+  </div>
+</div>
+
+<div class="catalog-toolbar">
+  <label class="field catalog-search">
+    <span class="field__label">Recherche</span>
+    <input
+      class="field__input"
+      type="text"
+      name="search"
+      placeholder="Rechercher un quiz..."
+      [value]="search()"
+      (input)="onSearch($event)"
+    />
+  </label>
+
+  <label class="field catalog-filter">
+    <span class="field__label">Difficulte minimale</span>
+    <select
+      class="field__input"
+      name="min-difficulty"
+      [value]="minDifficulty()"
+      (change)="onDifficultyChange($event)"
+    >
+      <option [value]="1">Toutes les difficultes</option>
+      <option [value]="2">Facile et plus</option>
+      <option [value]="3">Moyen et plus</option>
+    </select>
+  </label>
+</div>
+
+@if (filteredQuizzes().length === 0) {
+  <div class="empty-state">
+    <p class="empty-state__title">Aucun quiz disponible</p>
+    <p class="empty-state__text">Aucun quiz ne correspond a votre recherche.</p>
+  </div>
+} @else {
+  <div class="quiz-grid">
+    @for (quiz of filteredQuizzes(); track quiz.id) {
+      <article class="quiz-card">
+        <div class="quiz-card__header">
+          <h2 class="quiz-card__title">{{ quiz.title }}</h2>
+        </div>
+        <p class="quiz-card__desc">{{ quiz.description }}</p>
+        <div class="quiz-card__meta">
+          <span>{{ quiz.questions.length }} questions</span>
+          <span>{{ quiz.timeLimitSec }} s</span>
+        </div>
+        <button type="button" class="btn btn--primary" (click)="startQuiz(quiz.id)">
+          Passer ce quiz
+        </button>
+      </article>
+    }
+  </div>
+}
