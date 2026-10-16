@@ -53,4 +53,24 @@ démonstration, pas des secrets.
 
 ## Déploiement
 
-Application Angular avec rendu côté serveur (SSR), déployée sur Vercel.
+L'application est déployée sur Vercel en **rendu côté serveur (SSR)** : aucune
+page n'est servie comme fichier statique figé, chaque requête passe par une
+fonction Node qui exécute le serveur Angular Express (`src/server.ts`).
+
+| Fichier         | Rôle                                                                                                                                                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vercel.json`   | `npm run build`, sortie `dist/QUIZix/browser`, fonction `api/index.mjs`, et réécriture de toutes les routes (`/` compris) vers cette fonction              |
+| `api/index.mjs` | Point d'entrée serverless : ré-exporte le `reqHandler` produit par le build (`dist/QUIZix/server/server.mjs`), qui gère rendu, routes et fichiers statiques |
+| `angular.json`  | `security.allowedHosts` : domaines autorisés à déclencher le rendu, protection anti-SSRF d'Angular                                                         |
+
+Le build produit le serveur SSR, et `includeFiles` embarque `dist/QUIZix/**`
+(serveur + fichiers statiques) dans le bundle de la fonction.
+
+Déploiement : importer le dépôt sur [vercel.com/new](https://vercel.com/new) —
+`vercel.json` pilote toute la configuration, aucun réglage à modifier. En ligne
+de commande : `npm i -g vercel` puis `vercel --prod`.
+
+> **Domaine personnalisé** : Angular bloque par défaut les domaines non déclarés.
+> Pour utiliser un autre domaine que `*.vercel.app`, l'ajouter à
+> `security.allowedHosts` dans `angular.json` puis redéployer, sinon le rendu
+> répond `400 Bad Request`.
